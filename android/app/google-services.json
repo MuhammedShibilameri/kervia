@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "645005702198",
+    "project_id": "kervia-app",
+    "storage_bucket": "kervia-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:645005702198:android:38918b02ca08bb276b5497",
+        "android_client_info": {
+          "package_name": "com.example.kervia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "645005702198-oa0gnsgam0m3td7t6bc1m4u1hfkoa83u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.kervia",
+            "certificate_hash": "b73392daf3ba632303b1678fdd99497050201164"
+          }
+        },
+        {
+          "client_id": "645005702198-k13t78nar9b03egqbsu2ittrc557sc1v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyhCsJQFaBIW3mgrFStTSzLrUQQkYG-_w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "645005702198-k13t78nar9b03egqbsu2ittrc557sc1v.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "645005702198-ut4ovup0fovqqlarffuko5bsdr93banb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.kervia"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

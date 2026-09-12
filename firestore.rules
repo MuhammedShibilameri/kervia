@@ -1,0 +1,112 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /*
+     * Kervia Firestore security rules.
+     *
+     * Enforces the messaging access rule:
+     *  - Companies may start conversations with job seekers at any time.
+     *  - Job seekers may NOT start a conversation and may NOT write a message
+     *    until a company has created the conversation (i.e. sent the first
+     *    message). Conversations can only be created with
+     *    initiatorRole == 'company', and message writes for job seekers are
+     *    only allowed once such a conversation exists.
+     *
+     * To deploy: open your Firebase console -> Firestore Database -> Rules
+     * and paste this file, or run: firebase deploy --only firestore:rules
+     */
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSeeker(uid) {
+      return exists(/databases/$(database)/documents/job_seekers/$(uid));
+    }
+
+    function isCompany(uid) {
+      return exists(/databases/$(database)/documents/companies/$(uid));
+    }
+
+    // ---------------------------------------------------------------
+    // App-wide standard collections
+    // ---------------------------------------------------------------
+    match /users/{userId} {
+      allow read, write: if isSignedIn();
+    }
+    match /companies/{companyId} {
+      allow read, write: if isSignedIn();
+    }
+    match /job_seekers/{seekerId} {
+      allow read, write: if isSignedIn();
+    }
+    match /jobs/{jobId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isSignedIn() && isCompany(request.auth.uid);
+    }
+    match /applications/{applicationId} {
+      allow read, write: if isSignedIn();
+    }
+    match /saved_jobs/{docId} {
+      allow read, write: if isSignedIn();
+    }
+    match /reports/{reportId} {
+      allow read, create: if isSignedIn();
+      allow update, delete: if false;
+    }
+
+    // ---------------------------------------------------------------
+    // Messaging - role based permission system
+    // ---------------------------------------------------------------
+    match /conversations/{conversationId} {
+
+      // Only the two participants of a conversation can read it.
+      allow get: if isSignedIn() && request.auth.uid in resource.data.participantIds;
+      allow list: if isSignedIn() && request.auth.uid in resource.data.participantIds;
+
+      // A conversation can only be CREATED by a company, and the company
+      // signing the request must be one of its participants.
+      // Job seekers can never create a conversation (they would pass a
+      // non-'company' initiatorRole, which fails the rule below).
+      allow create: if isSignedIn()
+        && request.resource.data.initiatorRole == 'company'
+        && isCompany(request.auth.uid)
+        && request.auth.uid in request.resource.data.participantIds;
+
+      // Participants may update metadata (lastMessage, updatedAt). Job
+      // seekers may only update a conversation that a company initiated.
+      allow update: if isSignedIn()
+        && request.auth.uid in resource.data.participantIds
+        && (isCompany(request.auth.uid)
+            || resource.data.initiatorRole == 'company');
+
+      allow delete: if false;
+
+      match /messages/{messageId} {
+
+        // Message writes are only allowed when:
+        //  - the sender matches the authenticated user, AND
+        //  - the conversation already exists, AND
+        //  - the sender is a participant, AND
+        //  - the conversation was started by a company (or the sender is the
+        //    initiating company itself).
+        // A job seeker therefore cannot send until the company created the
+        // conversation with its first message.
+        allow create: if isSignedIn()
+          && request.resource.data.senderId == request.auth.uid
+          && exists(/databases/$(database)/documents/conversations/$(conversationId))
+          && request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.participantIds
+          && (get(/databases/$(database)/documents/conversations/$(conversationId)).data.initiatorRole == 'company'
+              || get(/databases/$(database)/documents/conversations/$(conversationId)).data.initiatorId == request.auth.uid);
+
+        allow read: if isSignedIn()
+          && (!exists(/databases/$(database)/documents/conversations/$(conversationId))
+              || request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.participantIds);
+
+        allow update: if false;
+        allow delete: if false;
+      }
+    }
+  }
+}
