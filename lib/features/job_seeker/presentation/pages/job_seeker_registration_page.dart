@@ -125,13 +125,13 @@ class _JobSeekerRegistrationPageState extends State<JobSeekerRegistrationPage> {
                             color: AppColors.primary,
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Icon(Icons.all_inclusive,
+                          child: const Icon(Icons.person_add_alt_outlined,
                               color: Colors.white, size: 22),
                         ),
                         const SizedBox(width: 12),
                         Flexible(
                           child: Text(
-                            'Kervia',
+                            context.tr('Registration'),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.playfairDisplay(

@@ -111,43 +111,77 @@ class _CompanyHomeShellViewState extends State<_CompanyHomeShellView> {
   }
 
   Widget _buildTopBar(BuildContext context, bool isDesktop) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        border: Border(bottom: BorderSide(color: AppColors.border)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(Icons.all_inclusive, color: Colors.white, size: 20),
+    final tabNames = [
+      context.tr('Dashboard'),
+      context.tr('Jobs'),
+      context.tr('Applicants'),
+      context.tr('Messages'),
+      context.tr('Profile'),
+    ];
+    final title = _currentIndex >= 0 && _currentIndex < tabNames.length
+        ? tabNames[_currentIndex]
+        : context.tr('Dashboard');
+    final tabIcons = [
+      Icons.dashboard_outlined,
+      Icons.work_outline,
+      Icons.people_outline,
+      Icons.chat_bubble_outline,
+      Icons.person_outline,
+    ];
+    final tabIcon =
+        _currentIndex >= 0 && _currentIndex < tabIcons.length
+            ? tabIcons[_currentIndex]
+            : Icons.dashboard_outlined;
+    return SafeArea(
+      bottom: false,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: const BorderRadius.vertical(
+            bottom: Radius.circular(24),
           ),
-          const SizedBox(width: 10),
-          Text(
-            'Kervia',
-            style: GoogleFonts.playfairDisplay(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.primary,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
             ),
-          ),
-          const Spacer(),
-          Text(
-            widget.companyProfile.companyName.isNotEmpty
-                ? widget.companyProfile.companyName
-                : context.tr('Company'),
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(tabIcon, color: Colors.white, size: 20),
             ),
-          ),
-        ],
+            const SizedBox(width: 10),
+            Text(
+              title,
+              style: GoogleFonts.playfairDisplay(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
+              ),
+            ),
+            const Spacer(),
+            Text(
+              widget.companyProfile.companyName.isNotEmpty
+                  ? widget.companyProfile.companyName
+                  : context.tr('Company'),
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

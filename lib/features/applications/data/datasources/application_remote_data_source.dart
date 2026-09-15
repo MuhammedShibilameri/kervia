@@ -3,7 +3,10 @@ import '../../domain/entities/job_application_entity.dart';
 import '../models/job_application_model.dart';
 
 abstract class ApplicationRemoteDataSource {
-  Future<List<JobApplicationModel>> getApplications({ApplicationStatus? status});
+  Future<List<JobApplicationModel>> getApplications({
+    ApplicationStatus? status,
+    String? userId,
+  });
   Future<void> withdrawApplication(String applicationId);
 }
 
@@ -249,11 +252,18 @@ class ApplicationRemoteDataSourceImpl implements ApplicationRemoteDataSource {
   ];
 
   @override
-  Future<List<JobApplicationModel>> getApplications({ApplicationStatus? status}) async {
+  Future<List<JobApplicationModel>> getApplications({
+    ApplicationStatus? status,
+    String? userId,
+  }) async {
     try {
       final firestore = _firestore;
       if (firestore != null) {
-        final snapshot = await firestore.collection('applications').get();
+        Query<Map<String, dynamic>> query = firestore.collection('applications');
+        if (userId != null && userId.isNotEmpty) {
+          query = query.where('userId', isEqualTo: userId);
+        }
+        final snapshot = await query.get();
         if (snapshot.docs.isNotEmpty) {
           final apps = snapshot.docs
               .map((doc) => JobApplicationModel.fromMap(doc.data(), doc.id))
@@ -269,6 +279,9 @@ class ApplicationRemoteDataSourceImpl implements ApplicationRemoteDataSource {
       // Fallback gracefully to mock data
     }
 
+    if (userId != null && userId.isNotEmpty) {
+      return const [];
+    }
     if (status == null || status == ApplicationStatus.all) {
       return _mockApplications;
     }

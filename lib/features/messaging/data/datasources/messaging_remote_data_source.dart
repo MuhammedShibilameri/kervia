@@ -22,6 +22,22 @@ abstract class MessagingRemoteDataSource {
   });
   Stream<List<MessageEntity>> watchMessages(String conversationId);
   Future<List<ConversationEntity>> getConversations(String userId);
+  Future<List<ConversationEntity>> getArchivedConversations(String userId);
+  Future<List<ConversationEntity>> getSpamConversations(String userId);
+  Future<void> archiveConversation(String conversationId, String userId,
+      {bool archive = true});
+  Future<void> spamConversation(String conversationId, String userId);
+  Future<void> unspamConversation(String conversationId);
+  Future<void> deleteConversation(String conversationId, String userId);
+  Future<void> editMessage({
+    required String conversationId,
+    required String messageId,
+    required String text,
+  });
+  Future<void> deleteMessage({
+    required String conversationId,
+    required String messageId,
+  });
 }
 
 class MessagingRemoteDataSourceImpl implements MessagingRemoteDataSource {
@@ -129,6 +145,10 @@ class MessagingRemoteDataSourceImpl implements MessagingRemoteDataSource {
           .get();
       final list = snapshot.docs
           .map((doc) => ConversationModel.fromMap(doc.data(), doc.id))
+          .where((c) =>
+              !c.deletedFor.contains(userId) &&
+              c.archivedBy != userId &&
+              c.spamBy != userId)
           .toList();
       list.sort((a, b) {
         final ta = DateTime.tryParse(a.updatedAt);
@@ -140,6 +160,156 @@ class MessagingRemoteDataSourceImpl implements MessagingRemoteDataSource {
     } catch (_) {
       return const [];
     }
+  }
+
+  @override
+  Future<List<ConversationEntity>> getArchivedConversations(
+      String userId) async {
+    final conversations = _conversations;
+    if (conversations == null) return const [];
+    try {
+      final snapshot = await conversations
+          .where('participantIds', arrayContains: userId)
+          .where('archivedBy', isEqualTo: userId)
+          .get();
+      final list = snapshot.docs
+          .map((doc) => ConversationModel.fromMap(doc.data(), doc.id))
+          .where((c) =>
+              !c.deletedFor.contains(userId) && c.spamBy != userId)
+          .toList();
+      list.sort((a, b) {
+        final ta = DateTime.tryParse(a.updatedAt);
+        final tb = DateTime.tryParse(b.updatedAt);
+        return (tb ?? DateTime.fromMillisecondsSinceEpoch(0))
+            .compareTo(ta ?? DateTime.fromMillisecondsSinceEpoch(0));
+      });
+      return list;
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  @override
+  Future<List<ConversationEntity>> getSpamConversations(String userId) async {
+    final conversations = _conversations;
+    if (conversations == null) return const [];
+    try {
+      final snapshot = await conversations
+          .where('participantIds', arrayContains: userId)
+          .where('spamBy', isEqualTo: userId)
+          .get();
+      final list = snapshot.docs
+          .map((doc) => ConversationModel.fromMap(doc.data(), doc.id))
+          .where((c) => !c.deletedFor.contains(userId))
+          .toList();
+      list.sort((a, b) {
+        final ta = DateTime.tryParse(a.updatedAt);
+        final tb = DateTime.tryParse(b.updatedAt);
+        return (tb ?? DateTime.fromMillisecondsSinceEpoch(0))
+            .compareTo(ta ?? DateTime.fromMillisecondsSinceEpoch(0));
+      });
+      return list;
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  @override
+  Future<void> archiveConversation(String conversationId, String userId,
+      {bool archive = true}) async {
+    final conversations = _conversations;
+    if (conversations == null) return;
+    await conversations.doc(conversationId).set(
+          {'archivedBy': archive ? userId : ''},
+          SetOptions(merge: true),
+        );
+  }
+
+  @override
+  Future<void> spamConversation(String conversationId, String userId) async {
+    final conversations = _conversations;
+    if (conversations == null) return;
+    await conversations.doc(conversationId).set(
+          {'spamBy': userId},
+          SetOptions(merge: true),
+        );
+  }
+
+  @override
+  Future<void> unspamConversation(String conversationId) async {
+    final conversations = _conversations;
+    if (conversations == null) return;
+    await conversations.doc(conversationId).set(
+          {'spamBy': ''},
+          SetOptions(merge: true),
+        );
+  }
+
+  @override
+  Future<void> deleteConversation(String conversationId, String userId) async {
+    final conversations = _conversations;
+    if (conversations == null) return;
+    await conversations.doc(conversationId).set(
+          {'deletedFor': FieldValue.arrayUnion([userId])},
+          SetOptions(merge: true),
+        );
+  }
+
+  @override
+  Future<void> editMessage({
+    required String conversationId,
+    required String messageId,
+    required String text,
+  }) async {
+    final conversations = _conversations;
+    if (conversations == null) return;
+    final docRef = conversations.doc(conversationId);
+    await docRef.collection('messages').doc(messageId).update({
+      'text': text,
+      'edited': true,
+    });
+    await _syncLastMessage(docRef);
+  }
+
+  @override
+  Future<void> deleteMessage({
+    required String conversationId,
+    required String messageId,
+  }) async {
+    final conversations = _conversations;
+    if (conversations == null) return;
+    final docRef = conversations.doc(conversationId);
+    await docRef.collection('messages').doc(messageId).update({
+      'text': 'deleted',
+      'deleted': true,
+    });
+    await _syncLastMessage(docRef);
+  }
+
+  Future<void> _syncLastMessage(
+      DocumentReference<Map<String, dynamic>> docRef) async {
+    final conv = await docRef.get();
+    if (!conv.exists) return;
+    final now = DateTime.now().toIso8601String();
+    final msgs = await docRef
+        .collection('messages')
+        .orderBy('timestamp', descending: true)
+        .limit(1)
+        .get();
+    if (msgs.docs.isEmpty) {
+      await docRef.set({
+        'lastMessage': '',
+        'lastSenderId': '',
+        'updatedAt': now,
+      }, SetOptions(merge: true));
+      return;
+    }
+    final data = msgs.docs.first.data();
+    await docRef.set({
+      'lastMessage': data['text'] ?? '',
+      'lastSenderId': data['senderId'] ?? '',
+      'updatedAt': now,
+    }, SetOptions(merge: true));
   }
 }
 
@@ -153,6 +323,9 @@ class ConversationModel extends ConversationEntity {
     required super.lastMessage,
     required super.lastSenderId,
     required super.updatedAt,
+    super.archivedBy,
+    super.spamBy,
+    super.deletedFor,
   });
 
   factory ConversationModel.fromMap(Map<String, dynamic> map, String id) {
@@ -165,6 +338,12 @@ class ConversationModel extends ConversationEntity {
       lastMessage: map['lastMessage'] as String? ?? '',
       lastSenderId: map['lastSenderId'] as String? ?? '',
       updatedAt: map['updatedAt'] as String? ?? '',
+      archivedBy: map['archivedBy'] as String? ?? '',
+      spamBy: map['spamBy'] as String? ?? '',
+      deletedFor: (map['deletedFor'] as List?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
     );
   }
 }
@@ -176,6 +355,8 @@ class MessageModel extends MessageEntity {
     required super.senderId,
     required super.text,
     required super.timestamp,
+    super.edited,
+    super.deleted,
   });
 
   factory MessageModel.fromMap(Map<String, dynamic> map, String id) {
@@ -185,6 +366,8 @@ class MessageModel extends MessageEntity {
       senderId: map['senderId'] as String? ?? '',
       text: map['text'] as String? ?? '',
       timestamp: map['timestamp'] as String? ?? '',
+      edited: (map['edited'] as bool?) ?? false,
+      deleted: (map['deleted'] as bool?) ?? false,
     );
   }
 }

@@ -84,14 +84,6 @@ class CompanyApplicantsPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    context.tr('Received Applications'),
-                    style: GoogleFonts.playfairDisplay(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
                   const SizedBox(height: 16),
                   ...applications.map((app) => _buildApplicantCard(context, app)),
                   const SizedBox(height: 24),

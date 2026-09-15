@@ -12,7 +12,9 @@ import 'job_detail_page.dart';
 import 'job_seeker_profile_page.dart';
 import 'saved_jobs_page.dart';
 import '../../../applications/presentation/pages/my_applications_page.dart';
+import '../../../applications/presentation/pages/my_interviews_page.dart';
 import '../../../messaging/presentation/pages/messages_page.dart';
+import 'notifications_page.dart';
 
 const List<String> _kFilterSkills = [
   'All Skills',
@@ -140,10 +142,9 @@ class _CandidateHomeShellState extends State<CandidateHomeShell> {
             onOpenTab: (i) => setState(() => _index = i),
           ),
           const MyApplicationsPage(showBottomNav: false),
-          _PlaceholderTab(
-            title: context.tr('Interviews'),
-            icon: Icons.event_outlined,
-            message: context.tr('Your upcoming interviews will appear here.'),
+          MyInterviewsPage(
+            userId: widget.user.id,
+            showBottomNav: false,
           ),
           MessagesPage(
             userId: widget.user.id,
@@ -177,7 +178,7 @@ class _CandidateHomeShellState extends State<CandidateHomeShell> {
               Icons.description,
               color: AppColors.primary,
             ),
-            label: context.tr('Applications'),
+            label: context.tr('Application'),
           ),
           NavigationDestination(
             icon: const Icon(Icons.event_outlined),
@@ -198,65 +199,6 @@ class _CandidateHomeShellState extends State<CandidateHomeShell> {
             label: context.tr('Profile'),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _PlaceholderTab extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final String message;
-
-  const _PlaceholderTab({
-    required this.title,
-    required this.icon,
-    required this.message,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    context.adaptive();
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(40),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(
-                    color: AppColors.primarySoft,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(icon, color: AppColors.primary, size: 40),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  context.tr(title),
-                  style: GoogleFonts.playfairDisplay(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  context.tr(message),
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                    height: 1.5,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -551,40 +493,56 @@ class _HomeTabState extends State<_HomeTab> {
               ),
               const Spacer(),
               // Notification Bell Icon in light mint circle with green dot
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    width: 42,
-                    height: 42,
-                    decoration: BoxDecoration(
-                      color: AppColors.primarySoft,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.notifications_outlined,
-                      color: AppColors.primary,
-                      size: 22,
-                    ),
-                  ),
-                  Positioned(
-                    top: 2,
-                    right: 2,
-                    child: Container(
-                      width: 10,
-                      height: 10,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF10B981),
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 2),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => NotificationsPage(
+                        notificationsEnabled:
+                            widget.profile?.notificationsEnabled ?? true,
                       ),
                     ),
-                  ),
-                ],
+                  );
+                },
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: AppColors.primarySoft,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.notifications_outlined,
+                        color: AppColors.primary,
+                        size: 22,
+                      ),
+                    ),
+                    if (widget.profile?.notificationsEnabled ?? true)
+                      Positioned(
+                        top: 2,
+                        right: 2,
+                        child: Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF10B981),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 2),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
               const SizedBox(width: 12),
               // User Avatar with green online dot
-              Stack(
+              GestureDetector(
+                onTap: () => widget.onOpenTab(4),
+                child: Stack(
                 clipBehavior: Clip.none,
                 children: [
                   Container(
@@ -620,6 +578,7 @@ class _HomeTabState extends State<_HomeTab> {
                     ),
                   ),
                 ],
+                ),
               ),
             ],
           ),

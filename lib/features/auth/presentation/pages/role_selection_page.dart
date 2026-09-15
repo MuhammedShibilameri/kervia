@@ -57,11 +57,11 @@ class RoleSelectionPage extends StatelessWidget {
                       color: AppColors.primary,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(Icons.all_inclusive, color: Colors.white, size: 22),
+                    child: const Icon(Icons.route_outlined, color: Colors.white, size: 22),
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Kervia',
+                    context.tr('Choose Your Path'),
                     style: GoogleFonts.playfairDisplay(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,

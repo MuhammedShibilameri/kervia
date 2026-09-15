@@ -80,6 +80,7 @@ class AppLocalizations {
     'Save Changes': 'മാറ്റങ്ങൾ സംരക്ഷിക്കുക',
     'Home': 'ഹോം',
     'Profile': 'പ്രൊഫൈൽ',
+    'Application': 'അപേക്ഷ',
     'Applications': 'അപേക്ഷകൾ',
     'Interviews': 'ഇന്റർവ്യൂകൾ',
     'Invitation': 'ക്ഷണം',
@@ -176,6 +177,39 @@ class AppLocalizations {
     'Saved Jobs': 'സംരക്ഷിച്ച ജോലികൾ',
     'Resume / Profile': 'റെസ്യൂം / പ്രൊഫൈൽ',
     'My Interviews': 'എന്റെ ഇന്റർവ്യൂകൾ',
+    'Companies that invite you to an interview appear here.':
+        'നിങ്ങളെ ഇന്റർവ്യൂവിന് ക്ഷണിക്കുന്ന കമ്പനികൾ ഇവിടെ കാണാം.',
+    'No interviews yet.': 'ഇതുവരെ ഇന്റർവ്യൂകളൊന്നുമില്ല.',
+    'When a company moves your application to the interview stage, it will appear here.':
+        'ഒരു കമ്പനി നിങ്ങളുടെ അപേക്ഷ ഇന്റർവ്യൂ ഘട്ടത്തിലേക്ക് മാറ്റുമ്പോൾ, അത് ഇവിടെ കാണാം.',
+    'Profile not found.': 'പ്രൊഫൈൽ കണ്ടെത്തിയില്ല.',
+    'Could not load profile.': 'പ്രൊഫൈൽ ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല.',
+    'Messages': 'സന്ദേശങ്ങൾ',
+    'Chat with candidates who applied to your jobs.':
+        'നിങ്ങളുടെ ജോലികൾക്ക് അപേക്ഷിച്ച സ്ഥാനാർത്ഥികളുമായി ചാറ്റ് ചെയ്യുക.',
+    'Chat with companies about your applications.':
+        'നിങ്ങളുടെ അപേക്ഷകളെക്കുറിച്ച് കമ്പനികളുമായി ചാറ്റ് ചെയ്യുക.',
+    'Archived Messages': 'ആർക്കൈവ് ചെയ്ത സന്ദേശങ്ങൾ',
+    'Spam (Reported)': 'സ്പാം (റിപ്പോർട്ട് ചെയ്തത്)',
+    'Conversation archived.': 'സംഭാഷണം ആർക്കൈവ് ചെയ്തു.',
+    'Conversation deleted.': 'സംഭാഷണം ഇല്ലാതാക്കി.',
+    'Restored to inbox.': 'ഇൻബോക്സിലേക്ക് പുനഃസ്ഥാപിച്ചു.',
+    'Reported as spam.': 'സ്പാം ആയി റിപ്പോർട്ട് ചെയ്തു.',
+    'Unspammed.': 'സ്പാം നീക്കി.',
+    'No archived conversations.': 'ആർക്കൈവ് ചെയ്ത സംഭാഷണങ്ങളൊന്നുമില്ല.',
+    'When you archive a conversation it will appear here so you can restore it.':
+        'നിങ്ങൾ ഒരു സംഭാഷണം ആർക്കൈവ് ചെയ്യുമ്പോൾ അത് ഇവിടെ ദൃശ്യമാകും, അത് പുനഃസ്ഥാപിക്കാം.',
+    'No spam conversations.': 'സ്പാം സംഭാഷണങ്ങളൊന്നുമില്ല.',
+    'If you mark a conversation as spam it will move here and be removed from your inbox.':
+        'നിങ്ങൾ ഒരു സംഭാഷണം സ്പാം ആയി അടയാളപ്പെടുത്തുകയാണെങ്കിൽ, അത് ഇവിടേക്ക് നീങ്ങുകയും നിങ്ങളുടെ ഇൻബോക്സിൽ നിന്ന് നീക്കം ചെയ്യപ്പെടുകയും ചെയ്യും.',
+    'Delete conversation?': 'സംഭാഷണം ഇല്ലാതാക്കണോ?',
+    'This removes the conversation from your messages. The other person can still see it.':
+        'ഇത് നിങ്ങളുടെ സന്ദേശങ്ങളിൽ നിന്ന് സംഭാഷണം നീക്കം ചെയ്യും. മറ്റേയാൾക്ക് ഇത് ഇപ്പോഴും കാണാൻ കഴിയും.',
+    'Could not archive the conversation.': 'സംഭാഷണം ആർക്കൈവ് ചെയ്യാൻ കഴിഞ്ഞില്ല.',
+    'Could not report the conversation.': 'സംഭാഷണം റിപ്പോർട്ട് ചെയ്യാൻ കഴിഞ്ഞില്ല.',
+    'Could not update the conversation.': 'സംഭാഷണം അപ്ഡേറ്റ് ചെയ്യാൻ കഴിഞ്ഞില്ല.',
+    'Could not delete the conversation.': 'സംഭാഷണം ഇല്ലാതാക്കാൻ കഴിഞ്ഞില്ല.',
+    'Skills': 'നൈപുണ്യങ്ങൾ',
     'Jobs for you': 'നിങ്ങൾക്കുള്ള ജോലികൾ',
     'Based on your saved profile preferences and current filters.':
         'നിങ്ങളുടെ സംരക്ഷിച്ച പ്രൊഫൈൽ മുൻഗണനകളും നിലവിലെ ഫിൽട്ടറുകളും അടിസ്ഥാനമാക്കി.',

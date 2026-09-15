@@ -34,7 +34,7 @@ void main() {
 
     // Verify brand name & headline
     expect(find.text('Kervia'), findsOneWidget);
-    expect(find.text('Elevate your career with Kervia'), findsOneWidget);
+    expect(find.text('Elevate your career'), findsOneWidget);
 
     // Verify key bullet points
     expect(find.text('Verified Professional Profiles'), findsOneWidget);

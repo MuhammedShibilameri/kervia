@@ -254,41 +254,47 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
   }
 
   Widget _buildTopBar(BuildContext context, bool isDesktop) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.border)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child:
-                const Icon(Icons.all_inclusive, color: Colors.white, size: 20),
+    return SafeArea(
+      bottom: false,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: const BorderRadius.vertical(
+            bottom: Radius.circular(24),
           ),
-          const SizedBox(width: 10),
-          Text(
-            'Kervia',
-            style: GoogleFonts.playfairDisplay(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.primary,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
             ),
-          ),
-          const Spacer(),
-          Text(
-            context.tr('Edit Profile'),
-            style: GoogleFonts.inter(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child:
+                  const Icon(Icons.edit_outlined, color: Colors.white, size: 20),
             ),
-          ),
-        ],
+            const SizedBox(width: 10),
+            Text(
+              context.tr('Edit Profile'),
+              style: GoogleFonts.playfairDisplay(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
+              ),
+            ),
+            const Spacer(),
+          ],
+        ),
       ),
     );
   }

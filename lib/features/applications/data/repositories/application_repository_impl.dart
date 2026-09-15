@@ -8,8 +8,11 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
   ApplicationRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<JobApplicationEntity>> getApplications({ApplicationStatus? status}) {
-    return remoteDataSource.getApplications(status: status);
+  Future<List<JobApplicationEntity>> getApplications({
+    ApplicationStatus? status,
+    String? userId,
+  }) {
+    return remoteDataSource.getApplications(status: status, userId: userId);
   }
 
   @override

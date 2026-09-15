@@ -104,8 +104,15 @@ service cloud.firestore {
           && (!exists(/databases/$(database)/documents/conversations/$(conversationId))
               || request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.participantIds);
 
-        allow update: if false;
-        allow delete: if false;
+        // A sender may edit or delete their own messages. Deletion is a soft
+        // delete that updates the message document (text -> 'deleted').
+        allow update: if isSignedIn()
+          && resource.data.senderId == request.auth.uid
+          && request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.participantIds;
+
+        allow delete: if isSignedIn()
+          && resource.data.senderId == request.auth.uid
+          && request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.participantIds;
       }
     }
   }

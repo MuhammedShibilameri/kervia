@@ -50,6 +50,9 @@ class JobSeekerProfileEntity extends Equatable {
   final int stepCompleted;
   final bool isSubmitted;
 
+  // Settings
+  final bool notificationsEnabled;
+
   const JobSeekerProfileEntity({
     required this.userId,
     this.fullName = '',
@@ -85,6 +88,7 @@ this.currentSalary = '',
     this.termsAgreed = false,
     this.stepCompleted = 1,
     this.isSubmitted = false,
+    this.notificationsEnabled = true,
   });
 
   JobSeekerProfileEntity copyWith({
@@ -122,6 +126,7 @@ this.currentSalary = '',
     bool? termsAgreed,
     int? stepCompleted,
     bool? isSubmitted,
+    bool? notificationsEnabled,
   }) {
     return JobSeekerProfileEntity(
       userId: userId ?? this.userId,
@@ -160,6 +165,7 @@ this.currentSalary = '',
       termsAgreed: termsAgreed ?? this.termsAgreed,
       stepCompleted: stepCompleted ?? this.stepCompleted,
       isSubmitted: isSubmitted ?? this.isSubmitted,
+      notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
     );
   }
 
@@ -199,5 +205,6 @@ this.currentSalary = '',
         termsAgreed,
         stepCompleted,
         isSubmitted,
+        notificationsEnabled,
       ];
 }

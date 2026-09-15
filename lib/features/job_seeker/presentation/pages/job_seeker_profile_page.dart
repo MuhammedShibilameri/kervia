@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -52,7 +53,13 @@ class _ProfileMenu extends StatefulWidget {
 }
 
 class _ProfileMenuState extends State<_ProfileMenu> {
-  String _notifications = 'Enabled';
+  late bool _notificationsEnabled;
+
+  @override
+  void initState() {
+    super.initState();
+    _notificationsEnabled = widget.profile.notificationsEnabled;
+  }
 
   void _signOut(BuildContext context) {
     context.read<AuthBloc>().add(SignOutEvent());
@@ -68,6 +75,25 @@ class _ProfileMenuState extends State<_ProfileMenu> {
     final first = parts[0][0];
     final second = parts.length > 1 && parts[1].isNotEmpty ? parts[1][0] : '';
     return '$first$second'.toUpperCase();
+  }
+
+  Future<void> _setNotifications(BuildContext context, bool enabled) async {
+    setState(() => _notificationsEnabled = enabled);
+    try {
+      await FirebaseFirestore.instance
+          .collection('job_seekers')
+          .doc(widget.user.id)
+          .update({'notificationsEnabled': enabled});
+      widget.onProfileChanged?.call();
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(context.tr('Could not save the setting.')),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
   }
 
   String get _role => widget.profile.currentOccupation.isNotEmpty
@@ -226,11 +252,13 @@ class _ProfileMenuState extends State<_ProfileMenu> {
                 _menuItem(
                   icon: Icons.notifications_outlined,
                   title: context.tr('Notifications'),
-                  subtitle: context.tr(_notifications),
+                  subtitle: context
+                      .tr(_notificationsEnabled ? 'Enabled' : 'Disabled'),
                   trailing: _segmentedControl(
                     options: const ['Enabled', 'Disabled'],
-                    selected: _notifications,
-                    onChanged: (v) => setState(() => _notifications = v),
+                    selected: _notificationsEnabled ? 'Enabled' : 'Disabled',
+                    onChanged: (v) =>
+                        _setNotifications(context, v == 'Enabled'),
                   ),
                 ),
               ],

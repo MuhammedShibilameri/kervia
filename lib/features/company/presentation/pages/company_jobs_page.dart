@@ -77,14 +77,6 @@ class CompanyJobsPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    context.tr('Your Jobs'),
-                    style: GoogleFonts.playfairDisplay(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
                   const SizedBox(height: 16),
                   ...jobs.map((job) => _buildJobCard(context, job)),
                   const SizedBox(height: 24),

@@ -6,6 +6,8 @@ import '../../../../core/theme/app_colors.dart';
 import '../../data/datasources/messaging_remote_data_source.dart';
 import '../../domain/entities/chat_entities.dart';
 import 'chat_page.dart';
+import 'archived_messages_page.dart';
+import 'spam_messages_page.dart';
 
 class MessagesPage extends StatefulWidget {
   final String userId;
@@ -130,23 +132,102 @@ class _MessagesPageState extends State<MessagesPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(14, 10, 14, 16),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(28),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 14,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    context.tr('Messages'),
-                    style: GoogleFonts.playfairDisplay(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                  Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.chat_bubble_outline,
+                      color: Colors.white,
+                      size: 22,
                     ),
                   ),
-                  const Spacer(),
-                  Icon(Icons.chat_bubble_outline, color: AppColors.primary),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          context.tr('Messages'),
+                          style: GoogleFonts.inter(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          widget.canInitiate
+                              ? context.tr(
+                                  'Chat with candidates who applied to your jobs.')
+                              : context.tr(
+                                  'Chat with companies about your applications.'),
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  PopupMenuButton<String>(
+                    icon:
+                        Icon(Icons.more_vert, color: AppColors.textPrimary),
+                    color: AppColors.surface,
+                    onSelected: _onMenuSelected,
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 'archive',
+                        child: Row(
+                          children: [
+                            const Icon(Icons.archive_outlined, size: 20),
+                            const SizedBox(width: 12),
+                            Text(context.tr('Archived Messages')),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'spam',
+                        child: Row(
+                          children: [
+                            const Icon(Icons.report_outlined, size: 20),
+                            const SizedBox(width: 12),
+                            Text(context.tr('Spam (Reported)')),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: 8),
                 ],
               ),
             ),
+
+            const SizedBox(height: 4),
+
             Expanded(
               child: _loading
                   ? const Center(
@@ -214,6 +295,31 @@ class _MessagesPageState extends State<MessagesPage> {
         ),
       ),
     );
+  }
+
+  void _onMenuSelected(String value) async {
+    if (value == 'archive') {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ArchivedMessagesPage(
+            userId: widget.userId,
+            displayName: widget.displayName,
+          ),
+        ),
+      );
+    } else if (value == 'spam') {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => SpamMessagesPage(
+            userId: widget.userId,
+            displayName: widget.displayName,
+          ),
+        ),
+      );
+    }
+    if (mounted) _load();
   }
 
   Future<void> _openNewMessage() async {

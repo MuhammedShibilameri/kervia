@@ -14,18 +14,23 @@ abstract class ApplicationEvent extends Equatable {
 
 class LoadApplicationsEvent extends ApplicationEvent {
   final ApplicationStatus status;
-  const LoadApplicationsEvent({this.status = ApplicationStatus.all});
+  final String? userId;
+  const LoadApplicationsEvent({
+    this.status = ApplicationStatus.all,
+    this.userId,
+  });
 
   @override
-  List<Object?> get props => [status];
+  List<Object?> get props => [status, userId];
 }
 
 class FilterByStatusEvent extends ApplicationEvent {
   final ApplicationStatus status;
-  const FilterByStatusEvent(this.status);
+  final String? userId;
+  const FilterByStatusEvent(this.status, {this.userId});
 
   @override
-  List<Object?> get props => [status];
+  List<Object?> get props => [status, userId];
 }
 
 class WithdrawApplicationEvent extends ApplicationEvent {
@@ -51,14 +56,16 @@ class ApplicationLoading extends ApplicationState {}
 class ApplicationLoaded extends ApplicationState {
   final List<JobApplicationEntity> applications;
   final ApplicationStatus selectedStatus;
+  final String? userId;
 
   const ApplicationLoaded({
     required this.applications,
     this.selectedStatus = ApplicationStatus.all,
+    this.userId,
   });
 
   @override
-  List<Object?> get props => [applications, selectedStatus];
+  List<Object?> get props => [applications, selectedStatus, userId];
 }
 
 class ApplicationError extends ApplicationState {
@@ -89,8 +96,12 @@ class ApplicationBloc extends Bloc<ApplicationEvent, ApplicationState> {
   ) async {
     emit(ApplicationLoading());
     try {
-      final apps = await getApplicationsUseCase(status: event.status);
-      emit(ApplicationLoaded(applications: apps, selectedStatus: event.status));
+      final apps = await getApplicationsUseCase(
+        status: event.status, userId: event.userId);
+      emit(ApplicationLoaded(
+          applications: apps,
+          selectedStatus: event.status,
+          userId: event.userId));
     } catch (e) {
       emit(ApplicationError('Failed to load applications: $e'));
     }
@@ -102,8 +113,12 @@ class ApplicationBloc extends Bloc<ApplicationEvent, ApplicationState> {
   ) async {
     emit(ApplicationLoading());
     try {
-      final apps = await getApplicationsUseCase(status: event.status);
-      emit(ApplicationLoaded(applications: apps, selectedStatus: event.status));
+      final apps = await getApplicationsUseCase(
+        status: event.status, userId: event.userId);
+      emit(ApplicationLoaded(
+          applications: apps,
+          selectedStatus: event.status,
+          userId: event.userId));
     } catch (e) {
       emit(ApplicationError('Failed to filter applications: $e'));
     }
@@ -117,11 +132,17 @@ class ApplicationBloc extends Bloc<ApplicationEvent, ApplicationState> {
       if (withdrawApplicationUseCase != null) {
         await withdrawApplicationUseCase!(event.applicationId);
       }
-      final currentStatus = state is ApplicationLoaded
-          ? (state as ApplicationLoaded).selectedStatus
-          : ApplicationStatus.all;
-      final apps = await getApplicationsUseCase(status: currentStatus);
-      emit(ApplicationLoaded(applications: apps, selectedStatus: currentStatus));
+      final current = state is ApplicationLoaded
+          ? (state as ApplicationLoaded)
+          : null;
+      final currentStatus = current?.selectedStatus ?? ApplicationStatus.all;
+      final userId = current?.userId;
+      final apps = await getApplicationsUseCase(
+          status: currentStatus, userId: userId);
+      emit(ApplicationLoaded(
+          applications: apps,
+          selectedStatus: currentStatus,
+          userId: userId));
     } catch (e) {
       emit(ApplicationError('Failed to withdraw application: $e'));
     }

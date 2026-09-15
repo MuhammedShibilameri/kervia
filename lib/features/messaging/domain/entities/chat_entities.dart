@@ -9,6 +9,9 @@ class ConversationEntity extends Equatable {
   final String lastMessage;
   final String lastSenderId;
   final String updatedAt;
+  final String archivedBy;
+  final String spamBy;
+  final List<String> deletedFor;
 
   const ConversationEntity({
     required this.id,
@@ -19,6 +22,9 @@ class ConversationEntity extends Equatable {
     required this.lastMessage,
     required this.lastSenderId,
     required this.updatedAt,
+    this.archivedBy = '',
+    this.spamBy = '',
+    this.deletedFor = const [],
   });
 
   String nameFor(String userId) => userId == userAId ? userBName : userAName;
@@ -35,6 +41,9 @@ class ConversationEntity extends Equatable {
         lastMessage,
         lastSenderId,
         updatedAt,
+        archivedBy,
+        spamBy,
+        deletedFor,
       ];
 }
 
@@ -44,6 +53,8 @@ class MessageEntity extends Equatable {
   final String senderId;
   final String text;
   final String timestamp;
+  final bool edited;
+  final bool deleted;
 
   const MessageEntity({
     required this.id,
@@ -51,9 +62,11 @@ class MessageEntity extends Equatable {
     required this.senderId,
     required this.text,
     required this.timestamp,
+    this.edited = false,
+    this.deleted = false,
   });
 
   @override
   List<Object?> get props =>
-      [id, conversationId, senderId, text, timestamp];
+      [id, conversationId, senderId, text, timestamp, edited, deleted];
 }

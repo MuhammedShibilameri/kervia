@@ -36,6 +36,7 @@ class JobSeekerProfileModel extends JobSeekerProfileEntity {
     super.termsAgreed,
     super.stepCompleted,
     super.isSubmitted,
+    super.notificationsEnabled,
   });
 
   factory JobSeekerProfileModel.fromEntity(JobSeekerProfileEntity entity) {
@@ -74,6 +75,7 @@ class JobSeekerProfileModel extends JobSeekerProfileEntity {
       termsAgreed: entity.termsAgreed,
       stepCompleted: entity.stepCompleted,
       isSubmitted: entity.isSubmitted,
+      notificationsEnabled: entity.notificationsEnabled,
     );
   }
 
@@ -113,6 +115,7 @@ class JobSeekerProfileModel extends JobSeekerProfileEntity {
       termsAgreed: (map['termsAgreed'] as bool?) ?? false,
       stepCompleted: (map['stepCompleted'] as int?) ?? 1,
       isSubmitted: (map['isSubmitted'] as bool?) ?? false,
+      notificationsEnabled: (map['notificationsEnabled'] as bool?) ?? true,
     );
   }
 
@@ -151,6 +154,7 @@ class JobSeekerProfileModel extends JobSeekerProfileEntity {
       'termsAgreed': termsAgreed,
       'stepCompleted': stepCompleted,
       'isSubmitted': isSubmitted,
+      'notificationsEnabled': notificationsEnabled,
       'updatedAt': DateTime.now().toIso8601String(),
     };
   }

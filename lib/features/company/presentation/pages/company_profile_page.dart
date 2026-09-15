@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/l10n/kervia_l10n.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/domain/entities/user_entity.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../auth/presentation/pages/sign_in_page.dart';
 import '../../data/datasources/company_remote_data_source.dart';
 import '../../data/repositories/company_repository_impl.dart';
 import '../../domain/entities/company_profile_entity.dart';
@@ -15,6 +17,14 @@ class CompanyProfilePage extends StatelessWidget {
   final UserEntity user;
 
   const CompanyProfilePage({super.key, required this.user});
+
+  void _signOut(BuildContext context) {
+    context.read<AuthBloc>().add(SignOutEvent());
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const SignInPage()),
+      (route) => false,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,73 +44,26 @@ class CompanyProfilePage extends StatelessWidget {
       child: Scaffold(
         backgroundColor: AppColors.background,
         body: SafeArea(
-          child: Column(
-            children: [
-              _buildTopBar(context, isDesktop),
-              Expanded(
-                child: BlocBuilder<CompanyBloc, CompanyState>(
-                  builder: (context, state) {
-                    if (state is CompanyLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (state is CompanyError) {
-                      return Center(
-                        child: Text(
-                          state.message,
-                          style: GoogleFonts.inter(color: AppColors.textMuted),
-                        ),
-                      );
-                    }
-                    if (state is CompanyLoaded) {
-                      return _buildProfile(context, state.profile, isDesktop);
-                    }
-                    return const SizedBox.shrink();
-                  },
-                ),
-              ),
-            ],
+          child: BlocBuilder<CompanyBloc, CompanyState>(
+            builder: (context, state) {
+              if (state is CompanyLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (state is CompanyError) {
+                return Center(
+                  child: Text(
+                    state.message,
+                    style: GoogleFonts.inter(color: AppColors.textMuted),
+                  ),
+                );
+              }
+              if (state is CompanyLoaded) {
+                return _buildProfile(context, state.profile, isDesktop);
+              }
+              return const SizedBox.shrink();
+            },
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildTopBar(BuildContext context, bool isDesktop) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.border)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child:
-                const Icon(Icons.all_inclusive, color: Colors.white, size: 20),
-          ),
-          const SizedBox(width: 10),
-          Text(
-            'Kervia',
-            style: GoogleFonts.playfairDisplay(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.primary,
-            ),
-          ),
-          const Spacer(),
-          Text(
-            context.tr('Company Profile'),
-            style: GoogleFonts.inter(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -217,6 +180,31 @@ class CompanyProfilePage extends StatelessWidget {
                   ),
                 ],
               ),
+            const SizedBox(height: 24),
+
+            // Logout
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => _signOut(context),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.error,
+                  side: const BorderSide(color: AppColors.error),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                icon: const Icon(Icons.logout, size: 18),
+                label: Text(
+                  context.tr('Logout'),
+                  style: GoogleFonts.inter(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
             const SizedBox(height: 32),
           ],
         ),

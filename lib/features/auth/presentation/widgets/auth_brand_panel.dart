@@ -10,7 +10,7 @@ class AuthBrandPanel extends StatelessWidget {
 
   const AuthBrandPanel({
     super.key,
-    this.title = 'Elevate your career with Kervia',
+    this.title = 'Elevate your career',
     this.description =
         'The premier professional network connecting elite talent with top-tier companies. Whether you\'re searching for your next big role or building a world-class team, Kervia provides the tools you need to succeed.',
     this.features = const [

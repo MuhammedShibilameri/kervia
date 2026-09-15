@@ -37,7 +37,7 @@ class KerviaBottomNavigationBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildNavItem(context, 0, 'Home', Icons.home_outlined, Icons.home),
-              _buildNavItem(context, 1, 'Applications', Icons.description_outlined, Icons.description),
+              _buildNavItem(context, 1, 'Application', Icons.description_outlined, Icons.description),
               _buildNavItem(context, 2, 'Interviews', Icons.calendar_today_outlined, Icons.calendar_today),
               _buildNavItem(context, 3, 'Invitation', Icons.mail_outline, Icons.mail),
               _buildNavItem(context, 4, 'Profile', Icons.person_outline, Icons.person),

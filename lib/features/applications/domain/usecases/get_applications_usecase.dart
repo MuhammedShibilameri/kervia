@@ -5,7 +5,10 @@ class GetApplicationsUseCase {
   final ApplicationRepository repository;
   GetApplicationsUseCase(this.repository);
 
-  Future<List<JobApplicationEntity>> call({ApplicationStatus status = ApplicationStatus.all}) {
-    return repository.getApplications(status: status);
+  Future<List<JobApplicationEntity>> call({
+    ApplicationStatus status = ApplicationStatus.all,
+    String? userId,
+  }) {
+    return repository.getApplications(status: status, userId: userId);
   }
 }

@@ -1,19 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/l10n/kervia_l10n.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../company/data/datasources/company_remote_data_source.dart';
-import '../../../company/presentation/pages/company_home_shell_page.dart';
-import '../../../company/presentation/pages/company_registration_page.dart';
-import '../../../job_seeker/presentation/pages/candidate_home_shell.dart';
-import '../../../job_seeker/presentation/pages/job_seeker_registration_page.dart';
-import '../../domain/entities/user_entity.dart';
 import '../bloc/auth_bloc.dart';
 import '../widgets/auth_brand_panel.dart';
-import 'otp_verification_page.dart';
+import 'landing_router.dart';
 import 'role_selection_page.dart';
+import 'otp_verification_page.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -48,52 +42,6 @@ class _SignInPageState extends State<SignInPage> {
     context.read<AuthBloc>().add(SignInWithGoogleEvent());
   }
 
-  Future<void> _openJobSeekerLanding(UserEntity user) async {
-    final navigator = Navigator.of(context);
-    try {
-      final doc = await FirebaseFirestore.instance
-          .collection('job_seekers')
-          .doc(user.id)
-          .get();
-      final isSubmitted =
-          (doc.data()?['isSubmitted'] as bool?) ?? false;
-      final target = isSubmitted
-          ? CandidateHomeShell(user: user) as Widget
-          : JobSeekerRegistrationPage(user: user) as Widget;
-      if (!mounted) return;
-      navigator.pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => target),
-        (route) => false,
-      );
-    } catch (_) {
-      if (!mounted) return;
-      navigator.pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (_) => JobSeekerRegistrationPage(user: user),
-        ),
-        (route) => false,
-      );
-    }
-  }
-
-  Future<void> _openCompanyLanding(UserEntity user) async {
-    final navigator = Navigator.of(context);
-    Widget target;
-    try {
-      final profile = await CompanyRemoteDataSourceImpl().getProfile(user.id);
-      target = (profile != null && profile.isProfileComplete)
-          ? CompanyHomeShellPage(user: user, companyProfile: profile)
-          : CompanyRegistrationPage(user: user) as Widget;
-    } catch (_) {
-      target = CompanyRegistrationPage(user: user);
-    }
-    if (!mounted) return;
-    navigator.pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => target),
-      (route) => false,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     context.adaptive();
@@ -126,18 +74,7 @@ class _SignInPageState extends State<SignInPage> {
             ),
           );
         } else if (state is AuthenticatedState) {
-          if (state.user.role == UserRole.jobSeeker) {
-            _openJobSeekerLanding(state.user);
-          } else if (state.user.role == UserRole.company) {
-            _openCompanyLanding(state.user);
-          } else {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                builder: (_) => RoleSelectionPage(user: state.user),
-              ),
-              (route) => false,
-            );
-          }
+          navigateToLanding(context, state.user);
         }
       },
       builder: (context, state) {
@@ -223,7 +160,7 @@ class _SignInPageState extends State<SignInPage> {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Kervia',
+                  context.tr('Sign In'),
                   style: GoogleFonts.playfairDisplay(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,

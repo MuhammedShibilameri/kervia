@@ -112,7 +112,13 @@ class _ApplicantDetailPageState extends State<ApplicantDetailPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(context.tr('File is not available on this device.')),
+            content: Text(
+              path.startsWith('/')
+                  ? context.tr(
+                      'This file was stored locally and is not available on this device. Ask the applicant to re-upload their resume/video.',
+                    )
+                  : context.tr('File is not available on this device.'),
+            ),
             backgroundColor: AppColors.error,
           ),
         );

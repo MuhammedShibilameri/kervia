@@ -33,30 +33,34 @@ class RegistrationStepperHeader extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(8),
+              Flexible(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(Icons.person_add_alt_outlined,
+                          color: Colors.white, size: 22),
                     ),
-                    child: const Icon(
-                      Icons.all_inclusive,
-                      color: Colors.white,
-                      size: 22,
+                    const SizedBox(width: 12),
+                    Flexible(
+                      child: Text(
+                        context.tr('Registration'),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.playfairDisplay(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Kervia',
-                    style: GoogleFonts.playfairDisplay(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               Flexible(
                 child: Text(

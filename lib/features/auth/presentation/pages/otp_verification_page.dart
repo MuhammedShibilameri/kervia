@@ -154,7 +154,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                             const Expanded(
                               flex: 5,
                               child: AuthBrandPanel(
-                                title: 'Elevate your career with Kervia',
+                                title: 'Verify your number',
                                 description:
                                     'Join the premier network of professionals and recruiters. Authenticate your identity to access premium features.',
                                 features: [
@@ -183,7 +183,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                       : Column(
                           children: [
                             const AuthBrandPanel(
-                              title: 'Elevate your career with Kervia',
+                              title: 'Verify your number',
                               description:
                                   'Join the premier network of professionals and recruiters. Authenticate your identity to access premium features.',
                             ),
